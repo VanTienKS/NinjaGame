@@ -4,6 +4,7 @@ import sys
 from scripts.supports import load_image, load_images
 from scripts.entities import PhysicsEntity
 from scripts.tilemap import TileMap
+from scripts.clouds import Clouds
 
 
 class Game():
@@ -15,9 +16,13 @@ class Game():
 
         self.clock = pygame.time.Clock()
         self.fps = fps
+        self.movement = [False, False]
+
+        self.scroll = [0, 0]
 
         self.assets = {
             'background': load_image('background.png'),
+            'clouds': load_images('clouds'),
             'player': load_image('entities\\player.png'),
             'decor': load_images('tiles\\decor'),
             'grass': load_images('tiles\\grass'),
@@ -28,8 +33,7 @@ class Game():
 
         self.player = PhysicsEntity(self, (60, 60), (8, 15))
         self.tilemap = TileMap(self, tile_size=16)
-
-        self.movement = [False, False]
+        self.clouds = Clouds(self.assets['clouds'], count=20)
 
     def run(self):
         while True:
@@ -50,12 +54,21 @@ class Game():
                     if event.key == pygame.K_RIGHT:
                         self.movement[1] = False
 
+            self.scroll[0] += (self.player.rect().centerx -
+                               self.display.get_width() / 2 - self.scroll[0]) / 20
+            self.scroll[1] += (self.player.rect().centery -
+                               self.display.get_height() / 2 - self.scroll[1]) / 20
+            render_scroll = (int(self.scroll[0]), int(self.scroll[1]))
+
+
+            self.clouds.update()
             self.player.update(self.tilemap,
                                (self.movement[1] - self.movement[0], 0))
 
             self.display.blit(self.assets['background'], (0, 0))
-            self.tilemap.render(self.display)
-            self.player.render(self.display)
+            self.clouds.render(self.display, offset=render_scroll)
+            self.tilemap.render(self.display, offset=render_scroll)
+            self.player.render(self.display, offset=render_scroll)
 
             self.screen.blit(pygame.transform.scale(
                 self.display, (self.screen.get_width(), self.screen.get_height())), (0, 0))

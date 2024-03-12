@@ -38,8 +38,9 @@ class TileMap:
                                          self.tile_size, self.tile_size))
         return rects
 
-    def render(self, surface):
+    def render(self, surface, offset=(0, 0)):
         for loc in self.tilemap:
             tile = self.tilemap[loc]
             surface.blit(self.game.assets[tile['type']][tile['variant']],
-                         (tile['pos'][0] * self.tile_size, tile['pos'][1] * self.tile_size))
+                         (tile['pos'][0] * self.tile_size - offset[0],
+                          tile['pos'][1] * self.tile_size - offset[1]))

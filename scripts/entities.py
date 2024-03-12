@@ -16,7 +16,7 @@ class PhysicsEntity:
 
     def update(self, tilemap, movement=(0, 0)):
         self.collisions = {key: False for key in self.collisions}
-        
+
         frame_movement = (movement[0] + self.velocity[0],
                           movement[1] + self.velocity[1])
 
@@ -45,10 +45,10 @@ class PhysicsEntity:
                 self.pos[1] = entity_rect.y
 
         self.velocity[1] = min(5, self.velocity[1]+0.1)
-        
+
         if self.collisions['up'] or self.collisions['down']:
             self.velocity[1] = 0
-            
 
-    def render(self, surface):
-        surface.blit(self.game.assets['player'], self.pos)
+    def render(self, surface, offset=(0, 0)):
+        surface.blit(self.game.assets['player'],
+                     (self.pos[0] - offset[0], self.pos[1] - offset[1]))
